@@ -1,0 +1,36 @@
+variables:
+  MYSQL_ROOT_PASSWORD: "root"
+  MYSQL_DATABASE: "products"
+  SPRING_DATASOURCE_URL: "jdbc:mariadb://mariadb:3306/products"
+  SPRING_DATASOURCE_USERNAME: "root"
+  SPRING_DATASOURCE_PASSWORD: "root"
+  MAVEN_OPTS: >-
+    -Dhttps.protocols=TLSv1.2
+    -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
+    -Dorg.slf4j.simpleLogger.showDateTime=true
+
+  MAVEN_CLI_OPTS: >-
+    --batch-mode
+    --errors
+    --fail-at-end
+    --show-version
+    --no-transfer-progress
+    -DinstallAtEnd=true
+    -DdeployAtEnd=true
+
+image: maven:3-openjdk-17
+
+services:
+  - name: mariadb:latest
+    alias: mariadb
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+
+cache:
+  paths:
+    - .m2/repository
+
+verify:
+  stage: test
+  script:
+    - cd backend
+    - 'mvn $MAVEN_CLI_OPTS verify'

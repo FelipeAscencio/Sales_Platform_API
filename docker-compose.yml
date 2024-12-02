@@ -1,0 +1,66 @@
+version: "3.7"
+
+services:
+  mariadb:
+    image: "mariadb"
+    restart: "on-failure"
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "products"
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./data/mariadb:/var/lib/mysql"
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
+      start_period: 1m
+      interval: 1m
+      timeout: 5s
+      retries: 3
+    networks:
+      - app_network
+
+  backend:
+    build: "./backend"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    restart: "on-failure"
+    environment:
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "root"
+      SPRING_DATASOURCE_URL: "jdbc:mariadb://mariadb:3306/products"
+    ports:
+      - "8080:8080"
+    networks:
+      - app_network
+
+  frontend:
+    build:
+      context: "./frontend"
+      dockerfile: "Dockerfile"
+      args:
+        VITE_API_URL: "http://localhost:8080"
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: "on-failure"
+    networks:
+      - app_network
+
+  phpmyadmin:
+    image: "phpmyadmin"
+    depends_on:
+      - "mariadb"
+    restart: "on-failure"
+    environment:
+      PMA_HOST: "mariadb"
+    ports:
+      - "8081:80"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
