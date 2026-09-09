@@ -15,12 +15,6 @@ In addition, we adopted agile methodologies to organize and optimize teamwork, a
 
 This approach allowed us to design a robust, scalable system aligned with the best practices in modern software development.
 
-## Link to the project's JIRA:
-
-https://grupo10ingsoft1.atlassian.net/jira/software/projects/SCRUM/boards/1/backlog
-
-This platform contains both the tracking of weekly work across the 5 sprints and additional documentation.
-
 ## How to run the application for the first time
 
 ```
@@ -29,10 +23,6 @@ pnpm run dev
 ```
 
 (To run it in subsequent instances, it is possible to omit the `--build`)
-
-## POSTMAN Collection
-
-https://documenter.getpostman.com/view/33693645/2sAYBUCCHZ
 
 ## Group Members
 
